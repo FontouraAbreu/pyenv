@@ -1,6 +1,24 @@
 #!/bin/bash
-ENV_DIR=".venv"
-if [ ! -d "$ENV_DIR" ]; then
-    python3 -m venv $ENV_DIR
+ENV_DIR=".env"
+CURRENT_DIR=$(pwd | awk -F/ '{print $NF}')
+
+main () {
+    # set 'deactivate' argument to exit virtual environment
+    if [ "$1" == "deactivate" ]; then
+        deactivate
+        exit 0
+    fi
+
+    # activate virtual environment
+    python3 -m venv --prompt $CURRENT_DIR $ENV_DIR
     source $ENV_DIR/bin/activate
-fi
+
+    # try to install requirements
+    if [ -f "requirements.txt" ]; then
+        pip install -r requirements.txt
+    else
+        echo "No requirements.txt file found"
+    fi
+}
+
+main "$@"
